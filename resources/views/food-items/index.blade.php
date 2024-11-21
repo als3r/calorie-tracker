@@ -4,9 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Food Items') }}
             </h2>
-            <a href="{{ route('food-items.create') }}" class="btn btn-primary py-2 px-4 rounded">
-                Add New Food Item
-            </a>
+            
         </div>
     </x-slot>
 
@@ -19,6 +17,28 @@
                             <span class="block sm:inline">{{ session('success') }}</span>
                         </div>
                     @endif
+
+                    <div>
+                        <!-- Search Form -->
+                        <div class="mb-4">
+                            <form action="{{ route('food-items.index') }}" method="GET" class="flex gap-4">
+                                <div class="flex-1">
+                                    <input type="text" 
+                                        name="search" 
+                                        placeholder="Search food items..." 
+                                        value="{{ request('search') }}"
+                                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
+                                </div>
+                                <button type="submit" class="btn btn-primary py-2 px-4 rounded">Search</button>
+                                @if(request('search'))
+                                    <a href="{{ route('food-items.index') }}" class="btn btn-secondary py-2 px-4 rounded">Clear</a>
+                                @endif
+                                <a href="{{ route('food-items.create') }}" class="btn btn-primary py-2 px-4 rounded">
+                                    Add New Food Item
+                                </a>
+                            </form>
+                        </div>
+                    </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-auto">

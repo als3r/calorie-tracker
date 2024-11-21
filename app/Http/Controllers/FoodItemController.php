@@ -10,9 +10,16 @@ class FoodItemController extends Controller
     /**
      * Display a listing of food items.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $foodItems = FoodItem::orderBy('name')->paginate(20);
+        $query = FoodItem::query();
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $foodItems = $query->orderBy('name')->paginate(20);
         return view('food-items.index', compact('foodItems'));
     }
 
