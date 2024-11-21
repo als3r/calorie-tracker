@@ -31,8 +31,13 @@ class FoodItemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'calories_per_gram' => 'required|numeric|min:0',
+            'calories_per_100g' => 'required|numeric|min:0',
             'calories_per_oz' => 'required|numeric|min:0',
+            'proteins' => 'required|numeric|min:0|max:100',
+            'lipids' => 'required|numeric|min:0|max:100',
+            'carbs' => 'required|numeric|min:0|max:100',
+            'fiber' => 'required|numeric|min:0|max:100',
+            'water' => 'required|numeric|min:0|max:100',
         ]);
 
         FoodItem::create($validated);
@@ -64,8 +69,13 @@ class FoodItemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'calories_per_gram' => 'required|numeric|min:0',
+            'calories_per_100g' => 'required|numeric|min:0',
             'calories_per_oz' => 'required|numeric|min:0',
+            'proteins' => 'required|numeric|min:0|max:100',
+            'lipids' => 'required|numeric|min:0|max:100',
+            'carbs' => 'required|numeric|min:0|max:100',
+            'fiber' => 'required|numeric|min:0|max:100',
+            'water' => 'required|numeric|min:0|max:100',
         ]);
 
         $foodItem->update($validated);

@@ -28,6 +28,11 @@
                                     <th class="px-6 py-3 text-left">Calories (per 100g)</th>
                                     <th class="px-6 py-3 text-left">Calories (per oz)</th>
                                     <th class="px-6 py-3 text-left">Calories (per 4 oz)</th>
+                                    <th class="px-6 py-3 text-left">Proteins (g)</th>
+                                    <th class="px-6 py-3 text-left">Lipids (g)</th>
+                                    <th class="px-6 py-3 text-left">Carbs (g)</th>
+                                    <th class="px-6 py-3 text-left">Fiber (g)</th>
+                                    <th class="px-6 py-3 text-left">Water (%)</th>
                                     <th class="px-6 py-3 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -35,9 +40,14 @@
                                 @foreach ($foodItems as $item)
                                     <tr>
                                         <td class="px-6 py-4">{{ $item->name }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->calories_per_gram * 100, 0) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->calories_per_oz, 0) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->calories_per_oz * 4, 0) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->calories_per_100g, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->calories_per_oz, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->calories_per_oz * 4, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->proteins, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->lipids, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->carbs, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->fiber, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->water, 1) }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('food-items.edit', $item) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">Edit</a>

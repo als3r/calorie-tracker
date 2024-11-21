@@ -16,8 +16,13 @@ class FoodItem extends Model
      */
     protected $fillable = [
         'name',
-        'calories_per_gram',
+        'calories_per_100g',
         'calories_per_oz',
+        'proteins',
+        'lipids',
+        'carbs',
+        'fiber',
+        'water',
     ];
 
     /**
@@ -26,7 +31,12 @@ class FoodItem extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'calories_per_gram' => 'decimal:2',
+        'calories_per_100g' => 'decimal:2',
         'calories_per_oz' => 'decimal:2',
+        'proteins' => 'decimal:2',
+        'lipids' => 'decimal:2',
+        'carbs' => 'decimal:2',
+        'fiber' => 'decimal:2',
+        'water' => 'decimal:2',
     ];
 }
