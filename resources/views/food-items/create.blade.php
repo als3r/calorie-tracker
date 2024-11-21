@@ -31,27 +31,27 @@
                         </div>
 
                         <div>
-                            <x-input-label for="proteins" :value="__('Proteins (g per 100g)')" />
-                            <x-text-input id="proteins" name="proteins" type="number" step="0.1" class="mt-1 block w-full" :value="old('proteins')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('proteins')" />
+                            <x-input-label for="total_fat" :value="__('Total Fat (g per 100g)')" />
+                            <x-text-input id="total_fat" name="total_fat" type="number" step="0.1" class="mt-1 block w-full" :value="old('total_fat')" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('total_fat')" />
                         </div>
 
                         <div>
-                            <x-input-label for="lipids" :value="__('Lipids (g per 100g)')" />
-                            <x-text-input id="lipids" name="lipids" type="number" step="0.1" class="mt-1 block w-full" :value="old('lipids')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('lipids')" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="carbs" :value="__('Carbs (g per 100g)')" />
-                            <x-text-input id="carbs" name="carbs" type="number" step="0.1" class="mt-1 block w-full" :value="old('carbs')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('carbs')" />
+                            <x-input-label for="total_carb" :value="__('Total Carbohydrate (g per 100g)')" />
+                            <x-text-input id="total_carb" name="total_carb" type="number" step="0.1" class="mt-1 block w-full" :value="old('total_carb')" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('total_carb')" />
                         </div>
 
                         <div>
                             <x-input-label for="fiber" :value="__('Fiber (g per 100g)')" />
                             <x-text-input id="fiber" name="fiber" type="number" step="0.1" class="mt-1 block w-full" :value="old('fiber')" required />
                             <x-input-error class="mt-2" :messages="$errors->get('fiber')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="protein" :value="__('Protein (g per 100g)')" />
+                            <x-text-input id="protein" name="protein" type="number" step="0.1" class="mt-1 block w-full" :value="old('protein')" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('protein')" />
                         </div>
 
                         <div>

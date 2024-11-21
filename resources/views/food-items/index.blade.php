@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Food Items') }}
             </h2>
-            <a href="{{ route('food-items.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('food-items.create') }}" class="btn btn-primary py-2 px-4 rounded">
                 Add New Food Item
             </a>
         </div>
@@ -25,14 +25,14 @@
                             <thead>
                                 <tr class="bg-gray-100 dark:bg-gray-700">
                                     <th class="px-6 py-3 text-left">Name</th>
-                                    <th class="px-6 py-3 text-left">Calories (per 100g)</th>
-                                    <th class="px-6 py-3 text-left">Calories (per oz)</th>
-                                    <th class="px-6 py-3 text-left">Calories (per 4 oz)</th>
-                                    <th class="px-6 py-3 text-left">Proteins (g)</th>
-                                    <th class="px-6 py-3 text-left">Lipids (g)</th>
-                                    <th class="px-6 py-3 text-left">Carbs (g)</th>
-                                    <th class="px-6 py-3 text-left">Fiber (g)</th>
+                                    <th class="px-6 py-3 text-left">Calories (kCal, per 100g)</th>
+                                    <th class="px-6 py-3 text-left">Total Fat (g, per 100g)</th>
+                                    <th class="px-6 py-3 text-left">Total Carbs (g, per 100g)</th>
+                                    <th class="px-6 py-3 text-left">Fiber (g, per 100g)</th>
+                                    <th class="px-6 py-3 text-left">Protein (g, per 100g)</th>
                                     <th class="px-6 py-3 text-left">Water (%)</th>
+                                    <th class="px-6 py-3 text-left">Calories (kCal, per oz)</th>
+                                    <th class="px-6 py-3 text-left">Calories (kCal, per 4 oz)</th>
                                     <th class="px-6 py-3 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -41,13 +41,13 @@
                                     <tr>
                                         <td class="px-6 py-4">{{ $item->name }}</td>
                                         <td class="px-6 py-4">{{ number_format($item->calories_per_100g, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->total_fat, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->total_carb, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->fiber, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->protein, 1) }}</td>
+                                        <td class="px-6 py-4">{{ number_format($item->water, 1) }}</td>
                                         <td class="px-6 py-4">{{ number_format($item->calories_per_oz, 1) }}</td>
                                         <td class="px-6 py-4">{{ number_format($item->calories_per_oz * 4, 1) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->proteins, 1) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->lipids, 1) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->carbs, 1) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->fiber, 1) }}</td>
-                                        <td class="px-6 py-4">{{ number_format($item->water, 1) }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('food-items.edit', $item) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">Edit</a>

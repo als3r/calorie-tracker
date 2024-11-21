@@ -18,9 +18,9 @@ class FoodItem extends Model
         'name',
         'calories_per_100g',
         'calories_per_oz',
-        'proteins',
-        'lipids',
-        'carbs',
+        'protein',
+        'total_fat',
+        'total_carb',
         'fiber',
         'water',
     ];
@@ -33,9 +33,9 @@ class FoodItem extends Model
     protected $casts = [
         'calories_per_100g' => 'decimal:2',
         'calories_per_oz' => 'decimal:2',
-        'proteins' => 'decimal:2',
-        'lipids' => 'decimal:2',
-        'carbs' => 'decimal:2',
+        'protein' => 'decimal:2',
+        'total_fat' => 'decimal:2',
+        'total_carb' => 'decimal:2',
         'fiber' => 'decimal:2',
         'water' => 'decimal:2',
     ];
