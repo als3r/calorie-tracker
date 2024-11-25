@@ -18,6 +18,7 @@ class Meal extends Model
      */
     protected $fillable = [
         'meal_type_id',
+        'user_id',
         'name',
         'description',
         'date',
@@ -35,7 +36,7 @@ class Meal extends Model
      */
     protected $casts = [
         'date' => 'date',
-        'time' => 'datetime',
+        'time' => 'datetime:H:i',
         'total_calories' => 'decimal:2',
         'total_protein' => 'decimal:2',
         'total_fat' => 'decimal:2',
@@ -51,6 +52,14 @@ class Meal extends Model
     }
 
     /**
+     * Get the user that owns this meal.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Get the food items for this meal.
      */
     public function foodItems(): BelongsToMany
@@ -58,5 +67,35 @@ class Meal extends Model
         return $this->belongsToMany(FoodItem::class, 'meal_food_items')
             ->withPivot(['quantity', 'unit'])
             ->withTimestamps();
+    }
+
+    /**
+     * Create a new meal template based on this meal.
+     */
+    public function createTemplate(string $name, ?string $description = null): UserMealTemplate
+    {
+        $template = new UserMealTemplate([
+            'user_id' => $this->user_id,
+            'meal_type_id' => $this->meal_type_id,
+            'name' => $name,
+            'description' => $description ?? $this->description,
+            'time' => $this->time,
+            'total_calories' => $this->total_calories,
+            'total_protein' => $this->total_protein,
+            'total_fat' => $this->total_fat,
+            'total_carb' => $this->total_carb,
+        ]);
+
+        $template->save();
+
+        // Copy food items
+        foreach ($this->foodItems as $foodItem) {
+            $template->foodItems()->attach($foodItem->id, [
+                'quantity' => $foodItem->pivot->quantity,
+                'unit' => $foodItem->pivot->unit,
+            ]);
+        }
+
+        return $template;
     }
 }
