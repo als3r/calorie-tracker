@@ -4,9 +4,9 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                <div class="shrink-0 inline-flex items-center">
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2">
+                        <x-application-logo-horizontal />
                     </a>
                 </div>
 
@@ -15,8 +15,14 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+                    <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.index')">
                         {{ __('Meals') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('history')" :active="request()->routeIs('history')">
+                        {{ __('History') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('meal-templates.index')" :active="request()->routeIs('meal-templates.*')">
+                        {{ __('Meal Templates') }}
                     </x-nav-link>
                     <x-nav-link :href="route('food-items.index')" :active="request()->routeIs('food-items.*')">
                         {{ __('Food Items') }}
@@ -76,8 +82,14 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+            <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.index')">
                 {{ __('Meals') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('history')" :active="request()->routeIs('history')">
+                {{ __('History') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('meal-templates.index')" :active="request()->routeIs('meal-templates.*')">
+                {{ __('Meal Templates') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('food-items.index')" :active="request()->routeIs('food-items.*')">
                 {{ __('Food Items') }}
