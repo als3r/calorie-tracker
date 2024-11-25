@@ -7,31 +7,38 @@ use App\Models\MealType;
 use App\Models\FoodItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 
 class MealController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of meals.
      */
     public function index(Request $request): View
     {
-        $query = Meal::query()->with(['mealType', 'foodItems']);
-        
-        if ($request->has('date') && $request->get('date') !== null) {
-            $query->whereDate('date', $request->get('date'));
+        $query = Meal::with(['mealType', 'foodItems'])
+            ->where('user_id', auth()->id());
+
+        // Filter by date if provided
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->date);
         }
-        
-        if ($request->has('meal_type') && $request->get('meal_type') !== null) {
-            $query->where('meal_type_id', $request->get('meal_type'));
+
+        // Filter by meal type if provided
+        if ($request->filled('meal_type')) {
+            $query->where('meal_type_id', $request->meal_type);
         }
-        
+
         $meals = $query->orderBy('date', 'desc')
-                      ->orderBy('time', 'desc')
-                      ->paginate(10);
-                      
+            ->orderBy('time', 'desc')
+            ->paginate(10)
+            ->withQueryString(); // This preserves the filter parameters in pagination links
+
         $mealTypes = MealType::orderBy('display_order')->get();
-        
+
         return view('meals.index', compact('meals', 'mealTypes'));
     }
 
@@ -40,9 +47,15 @@ class MealController extends Controller
      */
     public function create(): View
     {
-        $mealTypes = MealType::orderBy('display_order')->get();
+        $meal = new Meal();
+        $mealTypes = MealType::orderBy('name')->get();
         $foodItems = FoodItem::orderBy('name')->get();
-        return view('meals.create', compact('mealTypes', 'foodItems'));
+        $templates = auth()->user()->mealTemplates()
+            ->with(['mealType', 'foodItems'])
+            ->orderBy('name')
+            ->get();
+
+        return view('meals.form', compact('meal', 'mealTypes', 'foodItems', 'templates'));
     }
 
     /**
@@ -57,17 +70,18 @@ class MealController extends Controller
             'date' => 'required|date',
             'time' => 'required|date_format:H:i',
             'food_items' => 'required|array|min:1',
-            'food_items.*.id' => 'required|exists:food_items,id',
+            'food_items.*.food_item_id' => 'required|exists:food_items,id',
             'food_items.*.quantity' => 'required|numeric|min:0',
         ]);
 
-        $meal = Meal::create([
-            'meal_type_id' => $validated['meal_type_id'],
-            'name' => $validated['name'] ?? '',
-            'description' => $validated['description'] ?? '',
-            'date' => $validated['date'],
-            'time' => $validated['time'],
-        ]);
+        $meal = new Meal();
+        $meal->user_id = auth()->id();
+        $meal->meal_type_id = $validated['meal_type_id'];
+        $meal->name = $validated['name'] ?? '';
+        $meal->description = $validated['description'] ?? '';
+        $meal->date = $validated['date'];
+        $meal->time = now()->setTimeFromTimeString($validated['time']);
+        $meal->save();
 
         // Attach food items with quantities and calculate totals
         $totalCalories = 0;
@@ -76,7 +90,7 @@ class MealController extends Controller
         $totalCarb = 0;
 
         foreach ($validated['food_items'] as $item) {
-            $foodItem = FoodItem::find($item['id']);
+            $foodItem = FoodItem::find($item['food_item_id']);
             $quantity = $item['quantity'];
 
             // Calculate nutritional values based on quantity
@@ -86,7 +100,7 @@ class MealController extends Controller
             $totalFat += $foodItem->total_fat * $multiplier;
             $totalCarb += $foodItem->total_carb * $multiplier;
 
-            $meal->foodItems()->attach($item['id'], [
+            $meal->foodItems()->attach($foodItem->id, [
                 'quantity' => $quantity,
                 'unit' => 'g', // Always use grams as the default unit
             ]);
@@ -109,6 +123,11 @@ class MealController extends Controller
      */
     public function show(Meal $meal): View
     {
+        // Add authorization check
+        if ($meal->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $meal->load(['mealType', 'foodItems']);
         return view('meals.show', compact('meal'));
     }
@@ -118,10 +137,16 @@ class MealController extends Controller
      */
     public function edit(Meal $meal): View
     {
-        $meal->load('foodItems');
-        $mealTypes = MealType::orderBy('display_order')->get();
+        $this->authorize('update', $meal);
+
+        $mealTypes = MealType::orderBy('name')->get();
         $foodItems = FoodItem::orderBy('name')->get();
-        return view('meals.edit', compact('meal', 'mealTypes', 'foodItems'));
+        $templates = auth()->user()->mealTemplates()
+            ->with(['mealType', 'foodItems'])
+            ->orderBy('name')
+            ->get();
+
+        return view('meals.form', compact('meal', 'mealTypes', 'foodItems', 'templates'));
     }
 
     /**
@@ -129,6 +154,11 @@ class MealController extends Controller
      */
     public function update(Request $request, Meal $meal): RedirectResponse
     {
+        // Add authorization check
+        if ($meal->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'meal_type_id' => 'required|exists:meal_types,id',
             'name' => 'nullable|string|max:255',
@@ -136,7 +166,7 @@ class MealController extends Controller
             'date' => 'required|date',
             'time' => 'required|date_format:H:i',
             'food_items' => 'required|array|min:1',
-            'food_items.*.id' => 'required|exists:food_items,id',
+            'food_items.*.food_item_id' => 'required|exists:food_items,id',
             'food_items.*.quantity' => 'required|numeric|min:0',
         ]);
 
@@ -145,7 +175,7 @@ class MealController extends Controller
             'name' => $validated['name'] ?? '',
             'description' => $validated['description'] ?? '',
             'date' => $validated['date'],
-            'time' => $validated['time'],
+            'time' => now()->setTimeFromTimeString($validated['time']),
         ]);
 
         // Detach all existing food items
@@ -158,7 +188,7 @@ class MealController extends Controller
         $totalCarb = 0;
 
         foreach ($validated['food_items'] as $item) {
-            $foodItem = FoodItem::find($item['id']);
+            $foodItem = FoodItem::find($item['food_item_id']);
             $quantity = $item['quantity'];
 
             // Calculate nutritional values based on quantity
@@ -168,7 +198,7 @@ class MealController extends Controller
             $totalFat += $foodItem->total_fat * $multiplier;
             $totalCarb += $foodItem->total_carb * $multiplier;
 
-            $meal->foodItems()->attach($item['id'], [
+            $meal->foodItems()->attach($foodItem->id, [
                 'quantity' => $quantity,
                 'unit' => 'g', // Always use grams as the default unit
             ]);
@@ -191,8 +221,33 @@ class MealController extends Controller
      */
     public function destroy(Meal $meal): RedirectResponse
     {
+        // Add authorization check
+        if ($meal->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $meal->delete();
         return redirect()->route('meals.index')
             ->with('success', 'Meal deleted successfully.');
+    }
+
+    /**
+     * Create a template from the specified meal.
+     */
+    public function createTemplate(Request $request, Meal $meal)
+    {
+        if (auth()->id() !== $meal->user_id) {
+            abort(403);
+        }
+        
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $template = $meal->createTemplate($validated['name'], $validated['description']);
+
+        return redirect()->route('meal-templates.edit', $template)
+            ->with('success', 'Template created successfully from meal!');
     }
 }
