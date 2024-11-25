@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FoodItemSeeder::class,
             MealTypeSeeder::class,
+            MealSeeder::class,
+            UserMealTemplateSeeder::class,
         ]);
     }
 }
